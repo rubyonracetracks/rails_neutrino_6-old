@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+APP_NAME=$1
+TOGGLE_OUTLINE=$2
+
+DIR_MAIN=$PWD
+
+DIR_APP=$DIR_MAIN/$APP_NAME
+
+bash credentials.sh
+
+echo '-------'
+echo 'ruby -v'
+ruby -v
+
+echo '-------------------'
+echo 'cat /etc/os-release'
+cat /etc/os-release
+
+echo '----------------'
+echo 'gem list bundler'
+gem list bundler
+echo ''
+
+echo '--------'
+echo 'rails -v'
+rails -v
+echo ''
+
+DATE_START=$(date +%s)
+
+# Removing the old Rails app (if necessary)
+if [ -d "$DIR_APP" ]; then
+  rm -rf $DIR_APP
+fi
+
+# Creating the new Rails app
+echo '-----------------------------------'
+echo "cd $DIR_MAIN && rails new $APP_NAME"
+cd $DIR_MAIN && rails new $APP_NAME
+wait
