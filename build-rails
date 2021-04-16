@@ -120,6 +120,7 @@ cp -R $DIR_MAIN/mod $DIR_APP
 #########################################
 if [ "$MODE" != 'test' ]
 then
+  echo "$TIME_STAMP" > $DIR_APP/config/timestamp.txt
   cd $DIR_APP && bash mod_app.sh '01-01' $TOGGLE_OUTLINE
 fi
 #######################################
