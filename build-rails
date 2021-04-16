@@ -2,13 +2,12 @@
 set -e
 
 APP_NAME=$1
-TOGGLE_OUTLINE=$2
+MODE=$2
+TOGGLE_OUTLINE=$3
 
 DIR_MAIN=$PWD
 
 DIR_APP=$DIR_MAIN/$APP_NAME
-
-bash credentials.sh
 
 echo '-------'
 echo 'ruby -v'
@@ -28,6 +27,9 @@ echo 'rails -v'
 rails -v
 echo ''
 
+echo '-----------'
+echo "MODE: $MODE"
+
 DATE_START=$(date +%s)
 
 # Removing the old Rails app (if necessary)
@@ -35,8 +37,39 @@ if [ -d "$DIR_APP" ]; then
   rm -rf $DIR_APP
 fi
 
-# Creating the new Rails app
-echo '-----------------------------------'
-echo "cd $DIR_MAIN && rails new $APP_NAME"
-cd $DIR_MAIN && rails new $APP_NAME
-wait
+# Skip Step 01-01 in test mode
+if [ "$MODE" = 'test' ]
+then
+  echo '-------------------------------------------------------'
+  echo 'Downloading the basic Rails app instead of creating one'
+else
+  # Creating the new Rails app
+  echo '-----------------------------------'
+  echo "cd $DIR_MAIN && rails new $APP_NAME"
+  cd $DIR_MAIN && rails new $APP_NAME
+  wait
+
+  # Executing Step 01-01
+fi
+
+# Stop after Step 01-01 in short mode
+if [ "$MODE" = 'short' ]
+then
+  echo '--------------'
+  echo 'bundle install'
+  cd $DIR_APP && bundle install
+
+  echo '------------'
+  echo 'yarn install'
+  cd $DIR_APP && yarn install
+
+  echo '---------------------------'
+  echo 'bundle exec rake db:migrate'
+  cd $DIR_APP && bundle exec rake db:migrate
+
+  echo '##############################'
+  echo 'The basic app has been created'
+  echo "App Name: $APP_NAME"
+  
+  exit 0
+fi
