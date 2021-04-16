@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-APP_NAME=$1
-MODE=$2
+MODE=$1
+TIME_STAMP=$2
 TOGGLE_OUTLINE=$3
 
 DIR_MAIN=$PWD
@@ -16,6 +16,12 @@ ruby -v
 echo '-------------------'
 echo 'cat /etc/os-release'
 cat /etc/os-release
+echo ''
+
+echo '-----------------'
+echo 'bundler --version'
+bundler --version
+echo ''
 
 echo '----------------'
 echo 'gem list bundler'
@@ -28,14 +34,28 @@ rails -v
 echo ''
 
 echo '-----------'
+echo 'Time Stamp:'
+echo "$TIME_STAMP"
+echo ''
+
+echo '-----------'
 echo "MODE: $MODE"
 
-DATE_START=$(date +%s)
-
-# Removing the old Rails app (if necessary)
-if [ -d "$DIR_APP" ]; then
-  rm -rf $DIR_APP
+# Set the name of the new app
+APP_NAME='tmp1'
+if [ "$MODE" = 'short' ]
+then
+  APP_NAME="rail0-$TIME_STAMP"
+elif [ "$MODE" = 'full' ]
+then
+  APP_NAME="railn-$TIME_STAMP"
 fi
+
+# Set the directory of the new app
+DIR_APP=$PWD/$APP_NAME
+
+# Removing the old Rails app
+rm -rf $DIR_APP
 
 # Skip Step 01-01 in test mode
 if [ "$MODE" = 'test' ]

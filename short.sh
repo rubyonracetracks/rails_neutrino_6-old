@@ -12,7 +12,5 @@ bash credentials.sh
 
 DATE=`date -u +%Y%m%d-%H%M%S-%3N`
 
-APP_NAME="rail0-$DATE"
-
 mkdir -p log
-$PWD/build-rails "$APP_NAME" 'short' 2>&1 | tee log/railn-$DATE.txt
+$PWD/build-rails 'short' "$DATE" 2>&1 | tee log/short-$DATE.txt
