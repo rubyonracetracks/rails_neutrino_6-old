@@ -7,9 +7,11 @@ TOGGLE_OUTLINE=$3
 
 cleanup () {
   # Remove the mod* files from the new app
+  DIR_APP_LOCAL=$1
+
   echo 'Cleaning up the app'
-  rm -rf $DIR_APP/mod
-  rm $DIR_APP/mod*
+  rm -rf $DIR_APP_LOCAL/mod
+  rm $DIR_APP_LOCAL/mod*
 }
 
 DIR_MAIN=$PWD
@@ -141,7 +143,7 @@ then
   echo 'bundle exec rake db:migrate'
   cd $DIR_APP && bundle exec rake db:migrate
 
-  cleanup
+  cleanup $DIR_APP
 
   echo '##############################'
   echo 'The basic app has been created'
