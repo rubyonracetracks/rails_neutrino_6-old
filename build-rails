@@ -1,18 +1,11 @@
 #!/bin/bash
 set -e
 
-MODE=$1
-TIME_STAMP=$2
-TOGGLE_OUTLINE=$3
+APP_NAME=$1
 
-cleanup () {
-  # Remove the mod* files from the new app
-  DIR_APP_LOCAL=$1
-
-  echo 'Cleaning up the app'
-  rm -rf $DIR_APP_LOCAL/mod
-  rm $DIR_APP_LOCAL/mod*
-}
+#############
+# Preparation
+#############
 
 DIR_MAIN=$PWD
 
@@ -32,9 +25,9 @@ echo 'bundler --version'
 bundler --version
 echo ''
 
-echo '----------------'
-echo 'gem list bundler'
-gem list bundler
+echo '--------------------'
+echo 'gem list "^bundler$"'
+gem list "^bundler$"
 echo ''
 
 echo '--------'
@@ -42,32 +35,37 @@ echo 'rails -v'
 rails -v
 echo ''
 
-echo '-----------'
-echo 'Time Stamp:'
-echo "$TIME_STAMP"
+echo '---------'
+echo 'App Name:'
+echo "$APP_NAME"
 echo ''
 
-echo '-----------'
-echo "MODE: $MODE"
+HOST_ENV=`cat tmp/host_env.txt`
+FROM_SCRATCH=`cat tmp/from_scratch.txt`
+DOCKERIZE=`cat tmp/dockerize.txt`
+ADD_LINT=`cat tmp/add_lint.txt`
+ADD_VULNERABILITY_TESTS=`cat tmp/add_vulnerability_tests.txt`
+ADD_OTHER=`cat tmp/add_other.txt`
+ANNOTATE=`cat tmp/annotate.txt`
 
-####################################
-# BEGIN: Set the name of the new app
-####################################
-APP_NAME='tmp1'
-if [ "$MODE" = 'short' ]
-then
-  APP_NAME="rail0-$TIME_STAMP"
-elif [ "$MODE" = 'full' ]
-then
-  APP_NAME="railn-$TIME_STAMP"
-fi
-##################################
-# END: Set the name of the new app
-##################################
+echo '-----------------'
+echo 'Scope parameters:'
+echo ''
+echo "Host environment?                     $HOST_ENV"
+echo ''
+echo "Create app from scratch?              $FROM_SCRATCH"
+echo ''
+echo "Dockerize?                            $DOCKERIZE"
+echo ''
+echo "Add RuboCop and Rails Best Practices? $ADD_LINT"
+echo ''
+echo "Add vulnerability tests?              $ADD_VULNERABILITY_TESTS"
+echo ''
+echo "Add other features?                   $ADD_OTHER"
+echo ''
+echo "Run annotate at each step?            $ANNOTATE"
+echo ''
 
-##################################
-# Set the directory of the new app
-##################################
 DIR_APP=$PWD/$APP_NAME
 
 # Removing the old Rails app
@@ -86,15 +84,23 @@ echo '------------------------------'
 echo 'END: installing necessary gems'
 echo '------------------------------'
 
-#########################################
-# BEGIN: initial app creation/acquisition
-#########################################
-if [ "$MODE" = 'test' ]
+#################################
+# Initial app creation/acqusition
+#################################
+prepare_mod_app () {
+  cp $DIR_MAIN/mod_app.sh $DIR_APP
+  wait
+  cp -R $DIR_MAIN/mod $DIR_APP
+  wait
+}
+
+if [ "$FROM_SCRATCH" = 'N' ]
 then
+  # Download existing app
   echo '-------------------------------------------------------'
   echo 'Downloading the basic Rails app instead of creating one'
 else
-  # Creating the new Rails app
+  # Create new app from scratch
   echo '--------------------------'
   echo "BEGIN: rails new $APP_NAME"
   echo '--------------------------'
@@ -102,34 +108,12 @@ else
   echo '------------------------'
   echo "END: rails new $APP_NAME"
   echo '------------------------'
-fi
-#######################################
-# END: initial app creation/acquisition
-#######################################
-
-#################################################
-# Copy mod_app.sh to the new app's root directory
-#################################################
-cp $DIR_MAIN/mod_app.sh $DIR_APP
-
-########################################################
-# Copy the mod directory to the new app's root directory
-########################################################
-cp -R $DIR_MAIN/mod $DIR_APP
-
-#########################################
-# BEGIN: Step 01-01 (except in test mode)
-#########################################
-if [ "$MODE" != 'test' ]
-then
-  echo "$TIME_STAMP" > $DIR_APP/config/timestamp.txt
+  echo "$APP_NAME" > $DIR_APP/config/timestamp.txt
+  prepare_mod_app
   cd $DIR_APP && bash mod_app.sh '01-01' $TOGGLE_OUTLINE
 fi
-#######################################
-# END: Step 01-01 (except in test mode)
-#######################################
 
-if [ "$MODE" = 'short' ]
+if [ "$MODE" = 'mode1' ]
 then
   echo '--------------'
   echo 'bundle install'
@@ -143,11 +127,37 @@ then
   echo 'bundle exec rake db:migrate'
   cd $DIR_APP && bundle exec rake db:migrate
 
-  cleanup $DIR_APP
-
   echo '##############################'
   echo 'The basic app has been created'
   echo "App Name: $APP_NAME"
   
   exit 0
 fi
+
+cleanup () {
+  # Remove the mod* files from the new app
+  DIR_APP_LOCAL=$1
+
+  echo 'Cleaning up the app'
+  rm -rf $DIR_APP_LOCAL/mod
+  rm $DIR_APP_LOCAL/mod*
+}
+
+###############
+# FINAL TESTING
+###############
+if [ "$HOST_ENV" = 'N' ]
+then
+  echo '--------------'
+  echo 'bundle install'
+  cd $DIR_APP && bundle install
+
+  echo '------------'
+  echo 'yarn install'
+  cd $DIR_APP && yarn install
+
+  echo '#########################'
+  echo 'The app has been created!'
+  echo "App Name: $APP_NAME"
+fi
+

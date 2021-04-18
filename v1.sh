@@ -10,7 +10,17 @@
 
 bash credentials.sh
 
+mkdir -p tmp
+echo 'N' > tmp/host_env.txt
+echo 'Y' > tmp/from_scratch.txt
+echo 'N' > tmp/dockerize.txt
+echo 'N' > tmp/add_lint.txt
+echo 'N' > tmp/add_vulnerability_tests.txt
+echo 'N' > tmp/add_other.txt
+echo 'N' > tmp/annotate.txt
+
 DATE=`date -u +%Y%m%d-%H%M%S-%3N`
+APP_NAME="railv1-$DATE"
 
 mkdir -p log
-$PWD/build-rails 'short' "$DATE" 2>&1 | tee log/short-$DATE.txt
+$PWD/build-rails "$APP_NAME" 2>&1 | tee log/short-$DATE.txt
