@@ -113,35 +113,14 @@ else
   cd $DIR_APP && bash mod_app.sh '01-01' $TOGGLE_OUTLINE
 fi
 
-if [ "$MODE" = 'mode1' ]
-then
-  echo '--------------'
-  echo 'bundle install'
-  cd $DIR_APP && bundle install
+#########
+# CLEANUP
+#########
+# Remove the mod* files from the new app
 
-  echo '------------'
-  echo 'yarn install'
-  cd $DIR_APP && yarn install
-
-  echo '---------------------------'
-  echo 'bundle exec rake db:migrate'
-  cd $DIR_APP && bundle exec rake db:migrate
-
-  echo '##############################'
-  echo 'The basic app has been created'
-  echo "App Name: $APP_NAME"
-  
-  exit 0
-fi
-
-cleanup () {
-  # Remove the mod* files from the new app
-  DIR_APP_LOCAL=$1
-
-  echo 'Cleaning up the app'
-  rm -rf $DIR_APP_LOCAL/mod
-  rm $DIR_APP_LOCAL/mod*
-}
+echo 'Cleaning up the app'
+rm -rf $DIR_APP/mod
+rm $DIR_APP/mod*
 
 ###############
 # FINAL TESTING
@@ -160,4 +139,3 @@ then
   echo 'The app has been created!'
   echo "App Name: $APP_NAME"
 fi
-
