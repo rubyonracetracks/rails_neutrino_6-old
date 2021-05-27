@@ -19,7 +19,7 @@ echo 'N' > tmp/add_vulnerability_tests.txt
 echo 'N' > tmp/add_other.txt
 echo 'N' > tmp/annotate.txt
 
-DATE=`date -u +%Y%m%d-%H%M%S-%3N`
+DATE=`date -u +%Y%m%d-%H%M%S`
 APP_NAME="railv1-$DATE"
 
 mkdir -p log
