@@ -16,6 +16,7 @@ echo 'Y' > tmp/from_scratch.txt
 echo 'N' > tmp/dockerize.txt
 echo 'N' > tmp/add_lint.txt
 echo 'N' > tmp/add_vulnerability_tests.txt
+echo 'N' > tmp/add_static_pages.txt
 echo 'N' > tmp/add_other.txt
 echo 'N' > tmp/annotate.txt
 

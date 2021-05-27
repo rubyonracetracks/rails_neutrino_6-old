@@ -45,6 +45,7 @@ FROM_SCRATCH=`cat tmp/from_scratch.txt`
 DOCKERIZE=`cat tmp/dockerize.txt`
 ADD_LINT=`cat tmp/add_lint.txt`
 ADD_VULNERABILITY_TESTS=`cat tmp/add_vulnerability_tests.txt`
+ADD_STATIC_PAGES=`cat tmp/add_static_pages.txt`
 ADD_OTHER=`cat tmp/add_other.txt`
 ANNOTATE=`cat tmp/annotate.txt`
 
@@ -60,6 +61,8 @@ echo ''
 echo "Add RuboCop and Rails Best Practices? $ADD_LINT"
 echo ''
 echo "Add vulnerability tests?              $ADD_VULNERABILITY_TESTS"
+echo ''
+echo "Add static pages                      $ADD_STATIC_PAGES"
 echo ''
 echo "Add other features?                   $ADD_OTHER"
 echo ''
