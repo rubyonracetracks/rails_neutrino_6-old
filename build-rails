@@ -40,6 +40,7 @@ echo 'App Name:'
 echo "$APP_NAME"
 echo ''
 
+BASE_APP_URL='' # Will be updated later if necessary
 HOST_ENV=`cat tmp/host_env.txt`
 FROM_SCRATCH=`cat tmp/from_scratch.txt`
 DOCKERIZE=`cat tmp/dockerize.txt`
@@ -97,12 +98,33 @@ prepare_mod_app () {
   wait
 }
 
-if [ "$FROM_SCRATCH" = 'N' ]
+get_base_app_url_host () {
+  echo ''
+}
+
+get_base_app_url_virtual () {
+  if [ "$DOCKERIZE" = 'Y' ]
+  then
+    BASE_APP_URL=`cat base_apps/v1.txt`
+  fi
+}
+
+get_base_app_url () {
+  if [ "$HOST_ENV" = 'Y' ]
+  then
+    get_base_app_url_host
+  else
+    get_base_app_url_virtual
+  fi
+}
+
+download_base_app () {
+  get_base_app_url
+  git clone "$BASE_APP_URL" "$APP_NAME"
+}
+
+if [ "$FROM_SCRATCH" = 'Y' ]
 then
-  # Download existing app
-  echo '-------------------------------------------------------'
-  echo 'Downloading the basic Rails app instead of creating one'
-else
   # Create new app from scratch
   echo '--------------------------'
   echo "BEGIN: rails new $APP_NAME"
@@ -114,6 +136,9 @@ else
   echo "$APP_NAME" > $DIR_APP/config/timestamp.txt
   prepare_mod_app
   cd $DIR_APP && bash mod_app.sh '01-01' $TOGGLE_OUTLINE
+else
+  download_base_app
+  prepare_mod_app
 fi
 
 #########
