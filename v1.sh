@@ -21,7 +21,7 @@ echo 'N' > tmp/add_other.txt
 echo 'N' > tmp/annotate.txt
 
 DATE=`date -u +%Y%m%d-%H%M%S`
-APP_NAME="railv1-$DATE"
+APP_NAME="rails6v1-$DATE"
 
 mkdir -p log
 $PWD/build-rails "$APP_NAME" 2>&1 | tee log/short-$DATE.txt
