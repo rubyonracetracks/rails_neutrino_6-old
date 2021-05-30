@@ -84,9 +84,9 @@ echo '------------------------------'
 echo 'END: installing necessary gems'
 echo '------------------------------'
 
-#################################
-# Initial app creation/acqusition
-#################################
+########################################
+# 01-01: Initial app creation/acqusition
+########################################
 prepare_mod_app () {
   cp $DIR_MAIN/mod_app.sh $DIR_APP
   wait
@@ -94,12 +94,8 @@ prepare_mod_app () {
   wait
 }
 
-if [ "$FROM_SCRATCH" = 'N' ]
+if [ "$FROM_SCRATCH" = 'Y' ]
 then
-  # Download existing app
-  echo '-------------------------------------------------------'
-  echo 'Downloading the basic Rails app instead of creating one'
-else
   # Create new app from scratch
   echo '--------------------------'
   echo "BEGIN: rails new $APP_NAME"
@@ -111,6 +107,22 @@ else
   echo "$APP_NAME" > $DIR_APP/config/timestamp.txt
   prepare_mod_app
   cd $DIR_APP && bash mod_app.sh '01-01' $TOGGLE_OUTLINE
+else
+  # Download existing app
+  echo '-------------------------------------------------------'
+  echo 'Downloading the basic Rails app instead of creating one'
+  BASE_URL=`cat base_app_urls/v1.txt`
+  echo "git clone $BASE_URL $APP_NAME"
+  git clone $BASE_URL $APP_NAME
+  prepare_mod_app
+fi
+
+###############################
+# Rest of Unit 1: Dockerization
+###############################
+if [ "$DOCKERIZE" = 'Y' ]
+then
+  cd $DIR_APP && bash mod_app.sh '01-02' $TOGGLE_OUTLINE
 fi
 
 #########
@@ -119,8 +131,8 @@ fi
 # Remove the mod* files from the new app
 
 echo 'Cleaning up the app'
-rm -rf $DIR_APP/mod
-rm $DIR_APP/mod*
+# rm -rf $DIR_APP/mod
+# rm $DIR_APP/mod*
 
 ###############
 # FINAL TESTING
